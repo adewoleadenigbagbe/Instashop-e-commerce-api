@@ -14,8 +14,8 @@ type OrderItem struct {
 	Quantity     int       `gorm:"column:Quantity"`
 	UnitPrice    float64   `gorm:"column:UnitPrice"`
 	TotalPrice   float64   `gorm:"column:TotalPrice"`
-	CreatedOn    time.Time `gorm:"column:CreatedOn"`
-	ModifiedOn   time.Time `gorm:"column:ModifiedOn"`
+	CreatedOn    time.Time `gorm:"column:CreatedOn;autoCreateTime"`
+	ModifiedOn   time.Time `gorm:"column:ModifiedOn;autoUpdateTime"`
 	IsDeprecated bool      `gorm:"column:IsDeprecated"`
 }
 
@@ -26,7 +26,7 @@ func (OrderItem) TableName() string {
 func (orderItem *OrderItem) BeforeCreate(tx *gorm.DB) (err error) {
 	if orderItem.ID == uuid.Nil {
 		id, err := uuid.NewV7()
-		if err != nil {
+		if err == nil {
 			orderItem.ID = id
 		}
 	}

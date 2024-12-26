@@ -7,7 +7,7 @@ type ServerConfig struct {
 	Hostname string `envconfig:"HOSTNAME"`
 }
 
-func CreateServerConfig(content []byte) (*ServerConfig, error) {
+func CreateServerConfig() (*ServerConfig, error) {
 	config := &ServerConfig{}
 	err := envconfig.Process("", config)
 	if err != nil {

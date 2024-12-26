@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
@@ -9,8 +10,9 @@ import (
 
 	"github.com/adewoleadenigbagbe/instashop-e-commerce/apis/core"
 	_ "github.com/adewoleadenigbagbe/instashop-e-commerce/apis/docs"
+	middlewares "github.com/adewoleadenigbagbe/instashop-e-commerce/apis/middleware"
 	"github.com/adewoleadenigbagbe/instashop-e-commerce/apis/routes"
-	"github.com/joho/godotenv"
+	"github.com/adewoleadenigbagbe/instashop-e-commerce/shared/configs"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/gommon/log"
 	echoSwagger "github.com/swaggo/echo-swagger"
@@ -28,7 +30,7 @@ import (
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 
-// @host localhost:8185
+// @host localhost:8189
 // @BasePath /
 // Consumes:
 //      - application/json
@@ -36,12 +38,6 @@ import (
 //   - application/json
 // @schemes http
 func InitializeAPI() {
-	//load env variables
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-
 	//configure application
 	app, err := core.ConfigureApp()
 	if err != nil {
@@ -49,6 +45,9 @@ func InitializeAPI() {
 	}
 
 	app.Echo.Logger.SetLevel(log.INFO)
+
+	//set middleware validator
+	app.Echo.Validator = middlewares.NewValidator()
 
 	// Define a route
 	app.Echo.GET("/", func(c echo.Context) error {
@@ -60,9 +59,15 @@ func InitializeAPI() {
 	//Register All Routes
 	routes.RegisterAllRoutes(app)
 
+	serverConfig, err := configs.CreateServerConfig()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	// Start server
 	go func() {
-		if err := app.Echo.Start(":8185"); err != nil && err != http.ErrServerClosed {
+		port := fmt.Sprintf(":%s", serverConfig.Port)
+		if err := app.Echo.Start(port); err != nil && err != http.ErrServerClosed {
 			app.Echo.Logger.Fatal("shutting down the server")
 		}
 	}()

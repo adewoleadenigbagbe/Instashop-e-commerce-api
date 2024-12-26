@@ -14,14 +14,14 @@ type UserRole struct {
 	Name        string     `gorm:"column:Name"`
 	Role        enums.Role `gorm:"column:Role"`
 	Description string     `gorm:"column:Description"`
-	CreatedOn   time.Time  `gorm:"column:CreatedOn"`
-	ModifiedOn  time.Time  `gorm:"column:ModifiedOn"`
+	CreatedOn   time.Time  `gorm:"column:CreatedOn;autoCreateTime"`
+	ModifiedOn  time.Time  `gorm:"column:ModifiedOn;autoUpdateTime"`
 }
 
 func (userRole *UserRole) BeforeCreate(tx *gorm.DB) (err error) {
 	if userRole.ID == uuid.Nil {
 		id, err := uuid.NewV7()
-		if err != nil {
+		if err == nil {
 			userRole.ID = id
 		}
 	}

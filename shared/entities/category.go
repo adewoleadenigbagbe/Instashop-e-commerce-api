@@ -13,8 +13,8 @@ type Category struct {
 	Name         string             `gorm:"column:Name"`
 	Description  string             `gorm:"column:Description"`
 	Type         enums.CategoryType `gorm:"column:Type"`
-	CreatedOn    time.Time          `gorm:"column:CreatedOn"`
-	ModifiedOn   time.Time          `gorm:"column:ModifiedOn"`
+	CreatedOn    time.Time          `gorm:"column:CreatedOn;autoCreateTime"`
+	ModifiedOn   time.Time          `gorm:"column:ModifiedOn;autoUpdateTime"`
 	IsDeprecated bool               `gorm:"column:IsDeprecated"`
 }
 
@@ -25,7 +25,7 @@ func (Category) TableName() string {
 func (category *Category) BeforeCreate(tx *gorm.DB) (err error) {
 	if category.ID == uuid.Nil {
 		id, err := uuid.NewV7()
-		if err != nil {
+		if err == nil {
 			category.ID = id
 		}
 	}

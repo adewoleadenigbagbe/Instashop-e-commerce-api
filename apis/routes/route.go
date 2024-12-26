@@ -8,10 +8,6 @@ import (
 func RegisterAllRoutes(app *core.BaseApp) {
 	group := app.Echo.Group("/api/v1/")
 	authRoutes(app, group)
-	movieRoutes(app, group)
-	showRoutes(app, group)
-	cityRoutes(app, group)
-	cinemaRoutes(app, group)
+	productRoutes(app, group)
 	userRoutes(app, group)
-	bookingRoutes(app, group)
 }

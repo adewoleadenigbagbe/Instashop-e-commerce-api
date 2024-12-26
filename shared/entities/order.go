@@ -14,8 +14,8 @@ type Order struct {
 	Status       enums.OrderStatus `gorm:"column:Status"`
 	TotalAmount  float64           `gorm:"column:TotalAmount"`
 	TaxAmount    float64           `gorm:"column:TaxAmount"`
-	CreatedOn    time.Time         `gorm:"column:CreatedOn"`
-	ModifiedOn   time.Time         `gorm:"column:ModifiedOn"`
+	CreatedOn    time.Time         `gorm:"column:CreatedOn;autoCreateTime"`
+	ModifiedOn   time.Time         `gorm:"column:ModifiedOn;autoUpdateTime"`
 	IsDeprecated bool              `gorm:"column:IsDeprecated"`
 }
 
@@ -26,7 +26,7 @@ func (Order) TableName() string {
 func (order *Order) BeforeCreate(tx *gorm.DB) (err error) {
 	if order.ID == uuid.Nil {
 		id, err := uuid.NewV7()
-		if err != nil {
+		if err == nil {
 			order.ID = id
 		}
 	}

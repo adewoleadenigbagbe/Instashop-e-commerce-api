@@ -21,8 +21,9 @@ type User struct {
 	PhoneNumber  string    `gorm:"column:PhoneNumber"`
 	Password     string    `gorm:"column:Password"`
 	IsDeprecated bool      `gorm:"column:IsDeprecated"`
-	CreatedOn    time.Time `gorm:"column:CreatedOn"`
-	ModifiedOn   time.Time `gorm:"column:ModifiedOn"`
+	CreatedOn    time.Time `gorm:"column:CreatedOn;autoCreateTime"`
+	ModifiedOn   time.Time `gorm:"column:ModifiedOn;autoUpdateTime"`
+	UserRole     UserRole  `gorm:"foreignKey:RoleId;references:Id;constraint:OnUpdate:RESTRICT,OnDelete:RESTRICT"`
 }
 
 func (User) TableName() string {

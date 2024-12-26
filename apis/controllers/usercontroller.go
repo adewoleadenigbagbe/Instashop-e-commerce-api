@@ -5,9 +5,8 @@ import (
 	"reflect"
 
 	"github.com/adewoleadenigbagbe/instashop-e-commerce/apis/core"
-	"github.com/adewoleadenigbagbe/instashop-e-commerce/infastructure/services"
+	services "github.com/adewoleadenigbagbe/instashop-e-commerce/infastructure/services/user"
 	"github.com/labstack/echo/v4"
-	"github.com/samber/lo"
 )
 
 type UserController struct {
@@ -35,39 +34,8 @@ func (userController UserController) AddRoleHandler(userContext echo.Context) er
 
 	dataResp, errResp := userController.App.UserService.AddRole(*request)
 	if !reflect.ValueOf(errResp).IsZero() {
-		errs := lo.Map(errResp.Errors, func(er error, index int) string {
-			return er.Error()
-		})
-		return userContext.JSON(errResp.StatusCode, errs)
-	}
-	return userContext.JSON(http.StatusOK, dataResp)
-}
-
-// UpdateUserLocation godoc
-// @Summary      Add a new location for user
-// @Description   Add a new location for user
-// @Tags         users
-// @Accept       json
-// @Produce      json
-// @Param        UserLocationRequest  body  services.UserLocationRequest  true  "UserLocationRequest"
-// @Success      200  {object}  services.UserLocationResponse
-// @Failure      400  {object}  string
-// @Failure      404  {object}  []string
-// @Router       /api/v1/user/{id}/add-location [post]
-func (userController UserController) UpdateUserLocationHandler(userContext echo.Context) error {
-	var err error
-	request := new(services.UserLocationRequest)
-	err = userContext.Bind(request)
-	if err != nil {
-		return userContext.JSON(http.StatusBadRequest, err.Error())
+		return userContext.JSON(errResp.StatusCode, errResp.Error.Error())
 	}
 
-	dataResp, errResp := userController.App.UserService.UpdateUserLocation(*request)
-	if !reflect.ValueOf(errResp).IsZero() {
-		errs := lo.Map(errResp.Errors, func(er error, index int) string {
-			return er.Error()
-		})
-		return userContext.JSON(errResp.StatusCode, errs)
-	}
-	return userContext.JSON(http.StatusOK, dataResp)
+	return userContext.JSON(http.StatusCreated, dataResp)
 }

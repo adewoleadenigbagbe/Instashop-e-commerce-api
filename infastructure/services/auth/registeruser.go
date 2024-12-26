@@ -1,92 +1,61 @@
-// package services
+package services
 
-// import (
-// 	"fmt"
-// 	"net/http"
-// 	"regexp"
+import (
+	"net/http"
 
-// 	"github.com/adewoleadenigbagbe/instashop-e-commerce/shared/database/entities"
-// 	"github.com/adewoleadenigbagbe/instashop-e-commerce/shared/enums"
-// 	sequentialguid "github.com/adewoleadenigbagbe/instashop-e-commerce/shared/helpers"
-// 	"github.com/adewoleadenigbagbe/instashop-e-commerce/shared/helpers/utilities"
-// 	"github.com/adewoleadenigbagbe/instashop-e-commerce/shared/models"
-// 	"gorm.io/gorm"
-// )
+	"github.com/adewoleadenigbagbe/instashop-e-commerce/shared/entities"
+	"github.com/adewoleadenigbagbe/instashop-e-commerce/shared/models"
+	"github.com/google/uuid"
+	"gorm.io/gorm"
+)
 
-// const (
-// 	EmailRegex       = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*$"
-// 	PhoneNumberRegex = "\\+[1-9]{1}[0-9]{0,2}-[2-9]{1}[0-9]{2}-[2-9]{1}[0-9]{2}-[0-9]{4}$"
-// )
+const (
+	EmailRegex       = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*$"
+	PhoneNumberRegex = "\\+[1-9]{1}[0-9]{0,2}-[2-9]{1}[0-9]{2}-[2-9]{1}[0-9]{2}-[0-9]{4}$"
+)
 
-// type CreateUserRequest struct {
-// 	FirstName   string  `json:"firstName"`
-// 	LastName    string  `json:"lastName"`
-// 	Email       string  `json:"email"`
-// 	Password    string  `json:"password"`
-// 	PhoneNumber string  `json:"phoneNumber"`
-// 	RoleId      string  `json:"roleId"`
-// 	CityId      string  `json:"cityId"`
-// 	Address     string  `json:"address"`
-// 	Longitude   float32 `json:"longitude"`
-// 	Latitude    float32 `json:"latitude"`
-// }
+type CreateUserRequest struct {
+	FirstName   string `json:"firstName"`
+	LastName    string `json:"lastName"`
+	Email       string `json:"email"`
+	Password    string `json:"password"`
+	PhoneNumber string `json:"phoneNumber"`
+	RoleId      string `json:"roleId"`
+}
 
-// type CreateUserResponse struct {
-// 	UserId string `json:"userId"`
-// }
+type CreateUserResponse struct {
+	UserId uuid.UUID `json:"userId"`
+}
 
-// func (authService AuthService) RegisterUser(request CreateUserRequest) (CreateUserResponse, models.ErrorResponse) {
-// 	var err error
-// 	fieldsErrors := validateUser(request)
-// 	if len(fieldsErrors) != 0 {
-// 		return CreateUserResponse{}, models.ErrorResponse{Errors: fieldsErrors, StatusCode: http.StatusBadRequest}
-// 	}
+func (authService AuthService) RegisterUser(request CreateUserRequest) (CreateUserResponse, models.ErrorResponse) {
+	var err error
+	userId, _ := uuid.NewV7()
 
-// 	user := entities.User{
-// 		Id:           sequentialguid.New().String(),
-// 		FirstName:    request.FirstName,
-// 		LastName:     request.LastName,
-// 		Email:        request.Email,
-// 		RoleId:       request.RoleId,
-// 		Password:     request.Password,
-// 		PhoneNumber:  utilities.NewNullable[string](request.PhoneNumber, true),
-// 		IsDeprecated: false,
-// 	}
+	user := entities.User{
+		ID:           userId,
+		FirstName:    request.FirstName,
+		LastName:     request.LastName,
+		RoleId:       request.RoleId,
+		Email:        request.Email,
+		PhoneNumber:  request.PhoneNumber,
+		Password:     request.Password,
+		IsDeprecated: false,
+	}
 
-// 	err = authService.DB.Transaction(func(tx *gorm.DB) error {
-// 		if err := tx.Create(&user).Error; err != nil {
-// 			// return any error will rollback
-// 			return err
-// 		}
+	err = authService.DB.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Create(&user).Error; err != nil {
+			// return any error will rollback
+			return err
+		}
+		return nil
+	})
 
-// 		address := entities.Address{
-// 			Id:          sequentialguid.New().String(),
-// 			EntityId:    user.Id,
-// 			AddressType: enums.User,
-// 			AddressLine: request.Address,
-// 			CityId:      request.CityId,
-// 			Coordinates: entities.Coordinate{
-// 				Longitude: request.Longitude,
-// 				Latitude:  request.Latitude,
-// 			},
-// 			IsDeprecated: false,
-// 			IsCurrent:    true,
-// 		}
+	if err != nil {
+		return CreateUserResponse{}, models.ErrorResponse{Error: err, StatusCode: http.StatusBadRequest}
+	}
 
-// 		if err := tx.Create(&address).Error; err != nil {
-// 			// return any error will rollback
-// 			return err
-// 		}
-
-// 		return nil
-// 	})
-
-// 	if err != nil {
-// 		return CreateUserResponse{}, models.ErrorResponse{Errors: []error{err}, StatusCode: http.StatusBadRequest}
-// 	}
-
-// 	return CreateUserResponse{UserId: user.Id}, models.ErrorResponse{}
-// }
+	return CreateUserResponse{UserId: user.ID}, models.ErrorResponse{}
+}
 
 // func validateUser(request CreateUserRequest) []error {
 // 	var validationErrors []error

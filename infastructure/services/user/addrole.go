@@ -1,47 +1,48 @@
-// package services
+package services
 
-// import (
-// 	"fmt"
-// 	"net/http"
+import (
+	"fmt"
+	"net/http"
 
-// 	"github.com/adewoleadenigbagbe/instashop-e-commerce/shared/database/entities"
-// 	"github.com/adewoleadenigbagbe/instashop-e-commerce/shared/enums"
-// 	sequentialguid "github.com/adewoleadenigbagbe/instashop-e-commerce/shared/helpers"
-// 	"github.com/adewoleadenigbagbe/instashop-e-commerce/shared/models"
-// )
+	"github.com/adewoleadenigbagbe/instashop-e-commerce/shared/entities"
+	"github.com/adewoleadenigbagbe/instashop-e-commerce/shared/enums"
+	"github.com/adewoleadenigbagbe/instashop-e-commerce/shared/models"
+	"github.com/google/uuid"
+	"gorm.io/gorm"
+)
 
-// type CreateRoleRequest struct {
-// 	Name        string `json:"name"`
-// 	Role        int    `json:"role"`
-// 	Description string `json:"description"`
-// }
+type UserService struct {
+	DB *gorm.DB
+}
 
-// type CreateRoleResponse struct {
-// 	UserRoleId string `json:"userRoleId"`
-// }
+type CreateRoleRequest struct {
+	Name        string `json:"name"`
+	Role        int    `json:"role"`
+	Description string `json:"description"`
+}
 
-// func (userService UserService) AddRole(request CreateRoleRequest) (CreateRoleResponse, models.ErrorResponse) {
-// 	requiredFieldErrors := validateRole(request)
-// 	if len(requiredFieldErrors) > 0 {
-// 		return CreateRoleResponse{}, models.ErrorResponse{StatusCode: http.StatusBadRequest, Errors: requiredFieldErrors}
-// 	}
+type CreateRoleResponse struct {
+	UserRoleId uuid.UUID `json:"userRoleId"`
+}
 
-// 	userRole := entities.UserRole{
-// 		Id:          sequentialguid.New().String(),
-// 		Name:        request.Name,
-// 		Description: request.Description,
-// 		Role:        enums.Role(request.Role),
-// 	}
+func (userService UserService) AddRole(request CreateRoleRequest) (CreateRoleResponse, models.ErrorResponse) {
 
-// 	rowsAffected := userService.DB.Where(entities.UserRole{Role: enums.Role(request.Role)}).FirstOrCreate(&userRole).RowsAffected
+	roleId, _ := uuid.NewV7()
+	userRole := entities.UserRole{
+		ID:          roleId,
+		Name:        request.Name,
+		Description: request.Description,
+		Role:        enums.Role(request.Role),
+	}
 
-// 	if rowsAffected < 1 {
-// 		err := fmt.Errorf("role already exist")
-// 		return CreateRoleResponse{}, models.ErrorResponse{StatusCode: http.StatusBadRequest, Errors: []error{err}}
-// 	}
+	rowsAffected := userService.DB.Where(entities.UserRole{Role: enums.Role(request.Role)}).FirstOrCreate(&userRole).RowsAffected
+	if rowsAffected < 1 {
+		err := fmt.Errorf("role already exist")
+		return CreateRoleResponse{}, models.ErrorResponse{StatusCode: http.StatusBadRequest, Error: err}
+	}
 
-// 	return CreateRoleResponse{UserRoleId: userRole.Id}, models.ErrorResponse{}
-// }
+	return CreateRoleResponse{UserRoleId: userRole.ID}, models.ErrorResponse{}
+}
 
 // func validateRole(request CreateRoleRequest) []error {
 // 	vErrors := []error{}

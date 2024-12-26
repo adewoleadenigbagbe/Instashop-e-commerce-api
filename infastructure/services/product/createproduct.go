@@ -1,4 +1,4 @@
-package productservice
+package services
 
 import (
 	"github.com/adewoleadenigbagbe/instashop-e-commerce/shared/entities"
@@ -44,7 +44,7 @@ func (service ProductService) CreateProduct(request CreateProductRequest) (Creat
 	}
 
 	if err = service.DB.Create(&product).Error; err != nil {
-		return CreateProductResponse{}, models.ErrorResponse{StatusCode: http.StatusBadRequest, Error: err}
+		return CreateProductResponse{}, models.ErrorResponse{StatusCode: http.StatusInternalServerError, Error: err}
 	}
 
 	return CreateProductResponse{ProductId: productId}, models.ErrorResponse{}

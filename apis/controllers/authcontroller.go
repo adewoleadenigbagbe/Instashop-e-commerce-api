@@ -5,9 +5,9 @@ import (
 	"reflect"
 
 	"github.com/adewoleadenigbagbe/instashop-e-commerce/apis/core"
-	"github.com/adewoleadenigbagbe/instashop-e-commerce/infastructure/services"
+	services "github.com/adewoleadenigbagbe/instashop-e-commerce/infastructure/services/auth"
+
 	"github.com/labstack/echo/v4"
-	"github.com/samber/lo"
 )
 
 type AuthController struct {
@@ -35,10 +35,7 @@ func (authController AuthController) RegisterHandler(authContext echo.Context) e
 
 	response, errResp := authController.App.AuthService.RegisterUser(*request)
 	if !reflect.ValueOf(errResp).IsZero() {
-		errs := lo.Map(errResp.Errors, func(er error, index int) string {
-			return er.Error()
-		})
-		return authContext.JSON(errResp.StatusCode, errs)
+		return authContext.JSON(errResp.StatusCode, errResp.Error.Error())
 	}
 
 	return authContext.JSON(http.StatusOK, response)
@@ -65,10 +62,7 @@ func (authController AuthController) SignInHandler(authContext echo.Context) err
 
 	resp, errResp := authController.App.AuthService.SignIn(*request)
 	if !reflect.ValueOf(errResp).IsZero() {
-		errs := lo.Map(errResp.Errors, func(er error, index int) string {
-			return er.Error()
-		})
-		return authContext.JSON(errResp.StatusCode, errs)
+		return authContext.JSON(errResp.StatusCode, errResp.Error.Error())
 	}
 	return authContext.JSON(http.StatusOK, resp)
 }

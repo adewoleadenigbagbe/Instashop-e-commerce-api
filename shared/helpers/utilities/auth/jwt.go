@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/adewoleadenigbagbe/instashop-e-commerce/shared/database/entities"
+	"github.com/adewoleadenigbagbe/instashop-e-commerce/shared/entities"
 	"github.com/adewoleadenigbagbe/instashop-e-commerce/shared/enums"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
@@ -18,7 +18,7 @@ import (
 func GenerateJWT(user entities.User) (string, error) {
 	tokenTTL, _ := strconv.Atoi(os.Getenv("TOKEN_TTL"))
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"id":    user.Id,
+		"id":    user.ID,
 		"role":  user.UserRole.Role,
 		"email": user.Email,
 		"exp":   time.Now().Add(time.Second * time.Duration(tokenTTL)).Unix(),

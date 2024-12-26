@@ -1,7 +1,10 @@
 package core
 
 import (
-	"github.com/adewoleadenigbagbe/instashop-e-commerce/infastructure/product"
+	authService "github.com/adewoleadenigbagbe/instashop-e-commerce/infastructure/services/auth"
+	productService "github.com/adewoleadenigbagbe/instashop-e-commerce/infastructure/services/product"
+	services "github.com/adewoleadenigbagbe/instashop-e-commerce/infastructure/services/product"
+	userService "github.com/adewoleadenigbagbe/instashop-e-commerce/infastructure/services/user"
 	"github.com/adewoleadenigbagbe/instashop-e-commerce/shared/configs"
 	db "github.com/adewoleadenigbagbe/instashop-e-commerce/shared/database"
 	"github.com/labstack/echo/v4"
@@ -12,7 +15,9 @@ import (
 type BaseApp struct {
 	DB             *gorm.DB
 	Echo           *echo.Echo
-	ProductService services.ProductService
+	ProductService productService.ProductService
+	UserService    userService.UserService
+	AuthService    authService.AuthService
 }
 
 func ConfigureApp() (*BaseApp, error) {
