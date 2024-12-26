@@ -23,6 +23,10 @@ func (OrderItem) TableName() string {
 	return "OrderItems"
 }
 
+func (orderItem *OrderItem) CalculateTotal() {
+	orderItem.TotalPrice = orderItem.UnitPrice * float64(orderItem.Quantity)
+}
+
 func (orderItem *OrderItem) BeforeCreate(tx *gorm.DB) (err error) {
 	if orderItem.ID == uuid.Nil {
 		id, err := uuid.NewV7()

@@ -5,6 +5,7 @@ import (
 	"reflect"
 
 	"github.com/adewoleadenigbagbe/instashop-e-commerce/apis/core"
+	"github.com/adewoleadenigbagbe/instashop-e-commerce/apis/utils"
 	services "github.com/adewoleadenigbagbe/instashop-e-commerce/infastructure/services/product"
 
 	"github.com/labstack/echo/v4"
@@ -19,6 +20,12 @@ func (controller ProductController) CreateProductHandler(productContext echo.Con
 	err := productContext.Bind(request)
 	if err != nil {
 		return productContext.JSON(http.StatusBadRequest, err.Error())
+	}
+
+	// Validate request
+	if err := productContext.Validate(request); err != nil {
+		errors := utils.GetValidationErrors(err)
+		return productContext.JSON(http.StatusBadRequest, errors)
 	}
 
 	dataResp, errResp := controller.App.ProductService.CreateProduct(*request)
@@ -75,6 +82,12 @@ func (controller ProductController) UpdateProductHandler(productContext echo.Con
 	err := productContext.Bind(request)
 	if err != nil {
 		return productContext.JSON(http.StatusBadRequest, err.Error())
+	}
+
+	// Validate request
+	if err := productContext.Validate(request); err != nil {
+		errors := utils.GetValidationErrors(err)
+		return productContext.JSON(http.StatusBadRequest, errors)
 	}
 
 	dataResp, errResp := controller.App.ProductService.UpdateProduct(*request)

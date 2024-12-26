@@ -70,7 +70,7 @@ func (service ProductService) GetProducts(request GetProductsRequest) (Result, m
 	// Query products with pagination
 	result := service.DB.Table("products").
 		Joins("left join categories on categories.Id = products.CategoryId").
-		Select("products.Id AS Id,products.Name", "products.Description", "products.Stock", "products.Status", "products.ImageUrl", "categories.Name AS CategoryName", "categories.Description AS CategoryDescription", "categories.Type AS CategoryType").
+		Select("products.Id AS Id","products.Name", "products.Description", "products.Stock", "products.Status", "products.ImageUrl", "categories.Name AS CategoryName", "categories.Description AS CategoryDescription", "categories.Type AS CategoryType").
 		Offset(offset).
 		Limit(request.PageLength).
 		Order(clause.OrderByColumn{Column: clause.Column{Name: request.SortBy}, Desc: isDescending}).

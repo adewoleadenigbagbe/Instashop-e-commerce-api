@@ -2,8 +2,8 @@ package core
 
 import (
 	authService "github.com/adewoleadenigbagbe/instashop-e-commerce/infastructure/services/auth"
+	orderService "github.com/adewoleadenigbagbe/instashop-e-commerce/infastructure/services/order"
 	productService "github.com/adewoleadenigbagbe/instashop-e-commerce/infastructure/services/product"
-	services "github.com/adewoleadenigbagbe/instashop-e-commerce/infastructure/services/product"
 	userService "github.com/adewoleadenigbagbe/instashop-e-commerce/infastructure/services/user"
 	"github.com/adewoleadenigbagbe/instashop-e-commerce/shared/configs"
 	db "github.com/adewoleadenigbagbe/instashop-e-commerce/shared/database"
@@ -18,6 +18,7 @@ type BaseApp struct {
 	ProductService productService.ProductService
 	UserService    userService.UserService
 	AuthService    authService.AuthService
+	OrderService   orderService.OrderService
 }
 
 func ConfigureApp() (*BaseApp, error) {
@@ -37,7 +38,10 @@ func ConfigureApp() (*BaseApp, error) {
 	app := &BaseApp{
 		Echo:           echo.New(),
 		DB:             db,
-		ProductService: services.ProductService{DB: db},
+		ProductService: productService.ProductService{DB: db},
+		AuthService:    authService.AuthService{DB: db},
+		UserService:    userService.UserService{DB: db},
+		OrderService:   orderService.OrderService{DB: db},
 	}
 
 	return app, nil

@@ -13,13 +13,13 @@ import (
 
 type UpdateProductRequest struct {
 	ID          uuid.UUID           `param:"id"`
-	Name        string              `json:"name"`
-	Description string              `json:"description"`
-	Price       float64             `json:"price"`
-	CategoryId  uuid.UUID           `json:"categoryId"`
-	Stock       int                 `json:"stock"`
+	Name        string              `json:"name" validate:"required,min=3,max=100"`
+	Description string              `json:"description" validate:"required,min=3,max=100"`
+	Price       float64             `json:"price" validate:"required,gt=0"`
+	CategoryId  uuid.UUID           `json:"categoryId" validate:"required,uuid"`
+	Stock       int                 `json:"stock" validate:"required,gte=0"`
 	Status      enums.ProductStatus `json:"status"`
-	ImageURL    string              `json:"imageUrl"`
+	ImageURL    string              `json:"imageUrl" validate:"required"`
 }
 
 type UpdateProductResponse struct {

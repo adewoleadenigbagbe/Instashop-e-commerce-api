@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"strings"
 
+	"github.com/adewoleadenigbagbe/instashop-e-commerce/shared/models"
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 )
@@ -13,20 +14,8 @@ type CustomValidator struct {
 	validator *validator.Validate
 }
 
-type ValidationError struct {
-	Field   string   `json:"field"`
-	Message []string `json:"messages"`
-}
-
-type ErrorResponse struct {
-	Errors []ValidationError `json:"errors"`
-}
-
 func NewValidator() *CustomValidator {
 	v := validator.New()
-
-	// Register custom validation tags if needed
-	// v.RegisterValidation("custom_tag", customValidationFunc)
 
 	// Register function to get json tag name instead of struct field name
 	v.RegisterTagNameFunc(func(fld reflect.StructField) string {
@@ -55,16 +44,16 @@ func (cv *CustomValidator) Validate(i interface{}) error {
 		}
 
 		// Convert map to slice of ValidationError
-		var errors []ValidationError
+		var errors []models.ValidationError
 		for field, messages := range fieldErrors {
-			errors = append(errors, ValidationError{
+			errors = append(errors, models.ValidationError{
 				Field:   field,
 				Message: messages,
 			})
 		}
 
 		// Return custom error response
-		return echo.NewHTTPError(http.StatusBadRequest, ErrorResponse{
+		return echo.NewHTTPError(http.StatusBadRequest, models.ValidationErrorResponse{
 			Errors: errors,
 		})
 	}
@@ -106,4 +95,16 @@ func getErrorMessage(err validator.FieldError) string {
 		return "Must be a valid phone number"
 	}
 	return "Invalid value"
+}
+
+// Custom error handler for Echo framework
+func CustomHTTPErrorHandler(err error, c echo.Context) error {
+	// Check if it's an Echo HTTP error
+	if he, ok := err.(*echo.HTTPError); ok {
+		return c.JSON(he.Code, he.Message)
+	}
+	// Return generic error for other errors
+	return c.JSON(http.StatusInternalServerError, map[string]string{
+		"message": "Internal server error",
+	})
 }

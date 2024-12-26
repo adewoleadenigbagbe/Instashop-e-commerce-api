@@ -1,5 +1,7 @@
 package enums
 
+import "errors"
+
 type CategoryType int
 
 const (
@@ -14,3 +16,44 @@ const (
 	Toys        CategoryType = 9
 	Home        CategoryType = 10
 )
+
+func (c CategoryType) GetCategoryName() (string, error) {
+	switch c {
+	case Electronics:
+		return "Electronics", nil
+	case Fashion:
+		return "Fashion", nil
+	case Beauty:
+		return "Beauty", nil
+	case Sports:
+		return "Sports", nil
+	case Automotive:
+		return "Automotive", nil
+	case Health:
+		return "Health", nil
+	case Beverages:
+		return "Beverages", nil
+	case Books:
+		return "Books", nil
+	case Toys:
+		return "Toys", nil
+	case Home:
+		return "Home", nil
+	default:
+		return "", errors.New("no category type found")
+	}
+
+}
+
+func getDiscount(customerType string) float64 {
+	switch customerType {
+	case "VIP":
+		return 0.20
+	case "Regular":
+		return 0.10
+	case "New":
+		return 0.15
+	default:
+		return 0.0
+	}
+}
