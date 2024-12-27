@@ -1,41 +1,39 @@
 package cmd
 
-// import (
-// 	"github.com/spf13/cobra"
-// )
+import (
+	"github.com/spf13/cobra"
+)
 
-// type TicketMaster struct {
-// 	rootCmd *cobra.Command
-// }
+type ApiHost struct {
+	rootCmd *cobra.Command
+}
 
-// func NewTicketMaster() *TicketMaster {
-// 	tc := &TicketMaster{
-// 		rootCmd: &cobra.Command{
-// 			Use:   "ticketmaster",
-// 			Short: "Ticketmaster CLI",
-// 			// no need to provide the default cobra completion command
-// 			CompletionOptions: cobra.CompletionOptions{
-// 				DisableDefaultCmd: true,
-// 			},
-// 		},
-// 	}
+func NewAPIHost() *ApiHost {
+	tc := &ApiHost{
+		rootCmd: &cobra.Command{
+			Use:   "serveapi",
+			Short: "ApiHost CLI",
+			// no need to provide the default cobra completion command
+			CompletionOptions: cobra.CompletionOptions{
+				DisableDefaultCmd: true,
+			},
+		},
+	}
 
-// 	return tc
-// }
+	return tc
+}
 
-// func (ticketmaster *TicketMaster) Start() error {
-// 	ticketmaster.rootCmd.AddCommand(serveApiCommand())
-// 	ticketmaster.rootCmd.AddCommand(waitingServiceCommand())
-// 	ticketmaster.rootCmd.AddCommand(activationReservationCommand())
+func (host *ApiHost) Start() error {
+	host.rootCmd.AddCommand(serveApiCommand())
 
-// 	return ticketmaster.execute()
-// }
+	return host.execute()
+}
 
-// func (ticketmaster *TicketMaster) execute() error {
-// 	err := ticketmaster.rootCmd.Execute()
-// 	if err != nil {
-// 		return err
-// 	}
+func (host *ApiHost) execute() error {
+	err := host.rootCmd.Execute()
+	if err != nil {
+		return err
+	}
 
-// 	return nil
-// }
+	return nil
+}

@@ -2,8 +2,9 @@ package main
 
 import (
 	"log"
+	"os"
 
-	"github.com/adewoleadenigbagbe/instashop-e-commerce/apis/server"
+	"github.com/adewoleadenigbagbe/instashop-e-commerce/cmd"
 	"github.com/joho/godotenv"
 )
 
@@ -14,5 +15,9 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 
-	server.InitializeAPI()
+	host := cmd.NewAPIHost()
+	err = host.Start()
+	if err != nil {
+		os.Exit(1)
+	}
 }
