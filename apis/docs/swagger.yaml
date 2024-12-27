@@ -1,106 +1,375 @@
-basePath: /
 definitions:
-  enums.SeatType:
+  enums.CategoryType:
+    enum:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    - 7
+    - 8
+    - 9
+    - 10
+    type: integer
+    x-enum-varnames:
+    - Electronics
+    - Fashion
+    - Beauty
+    - Sports
+    - Automotive
+    - Health
+    - Beverages
+    - Books
+    - Toys
+    - Home
+  enums.OrderStatus:
+    enum:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    type: integer
+    x-enum-varnames:
+    - Pending
+    - Confirmed
+    - Shipped
+    - Delivered
+    - Cancelled
+  enums.ProductStatus:
     enum:
     - 1
     - 2
     - 3
     type: integer
     x-enum-varnames:
-    - Premium
-    - Standard
-    - Gold
-  services.CinemaHallModel:
+    - Active
+    - InActive
+    - Discontinued
+  enums.Role:
+    enum:
+    - 1
+    - 2
+    type: integer
+    x-enum-varnames:
+    - EndUser
+    - Admin
+  services.CancelOrderRequest:
     properties:
-      cinemaSeats:
+      id:
+        type: string
+    required:
+    - id
+    type: object
+  services.CancelOrderResponse:
+    properties:
+      orderId:
+        type: string
+    type: object
+  services.CreateOrderRequest:
+    properties:
+      orderItems:
         items:
-          $ref: '#/definitions/services.CinemaSeatModel'
+          $ref: '#/definitions/services.OrderItemModel'
         type: array
+      userId:
+        type: string
+    required:
+    - orderItems
+    - userId
+    type: object
+  services.CreateOrderResponse:
+    properties:
+      orderId:
+        type: string
+    type: object
+  services.CreateProductRequest:
+    properties:
+      categoryId:
+        type: string
+      description:
+        maxLength: 100
+        minLength: 3
+        type: string
+      imageUrl:
+        type: string
       name:
+        maxLength: 100
+        minLength: 3
         type: string
-      totalSeat:
+      price:
+        type: number
+      status:
+        $ref: '#/definitions/enums.ProductStatus'
+      stock:
+        minimum: 0
         type: integer
+    required:
+    - categoryId
+    - description
+    - imageUrl
+    - name
+    - price
+    - stock
     type: object
-  services.CinemaHallRequest:
+  services.CreateProductResponse:
     properties:
-      halls:
-        items:
-          $ref: '#/definitions/services.CinemaHallModel'
-        type: array
-      id:
+      productId:
         type: string
     type: object
-  services.CinemaHallResponse:
-    properties:
-      CinemaId:
-        type: string
-    type: object
-  services.CinemaSeatModel:
-    properties:
-      seatNumber:
-        type: integer
-      type:
-        $ref: '#/definitions/enums.SeatType'
-    type: object
-  services.CityModelResponse:
-    properties:
-      id:
-        type: string
-      isDeprecated:
-        type: boolean
-      name:
-        type: string
-      state:
-        type: string
-    type: object
-  services.CreateCinemaSeatRequest:
-    properties:
-      cinemaHallId:
-        type: string
-      cinemaSeats:
-        items:
-          $ref: '#/definitions/services.CinemaSeatModel'
-        type: array
-      id:
-        type: string
-    type: object
-  services.CreateCinemaSeatResponse:
-    properties:
-      statusCode:
-        type: integer
-    type: object
-  services.MovieDataResponse:
+  services.CreateRoleRequest:
     properties:
       description:
         type: string
-      genre:
-        type: integer
+      role:
+        $ref: '#/definitions/enums.Role'
+    required:
+    - description
+    - role
+    type: object
+  services.CreateRoleResponse:
+    properties:
       id:
         type: string
-      language:
+    type: object
+  services.CreateUserRequest:
+    properties:
+      email:
         type: string
-      popularity:
+      firstName:
+        type: string
+      lastName:
+        type: string
+      password:
+        type: string
+      phoneNumber:
+        type: string
+      roleId:
+        type: string
+    required:
+    - email
+    - firstName
+    - lastName
+    - password
+    - phoneNumber
+    - roleId
+    type: object
+  services.CreateUserResponse:
+    properties:
+      id:
+        type: string
+    type: object
+  services.DeleteProductRequest:
+    properties:
+      id:
+        type: string
+    type: object
+  services.GetOrderItemModel:
+    properties:
+      categoryName:
+        type: string
+      orderItemId:
+        type: string
+      productDescription:
+        type: string
+      productName:
+        type: string
+      productPrice:
         type: number
-      releaseDate:
+      quantity:
+        type: integer
+      subTotal:
+        type: number
+    type: object
+  services.GetOrderRequest:
+    properties:
+      order:
         type: string
-      title:
+      page:
+        type: integer
+      pageLength:
+        type: integer
+      sortBy:
         type: string
-      voteCount:
+      userId:
+        type: string
+    required:
+    - userId
+    type: object
+  services.GetOrderResponse:
+    properties:
+      orders:
+        items:
+          $ref: '#/definitions/services.OrderModel'
+        type: array
+    type: object
+  services.GetProductByIdResponse:
+    properties:
+      categoryDescription:
+        type: string
+      categoryName:
+        type: string
+      categoryType:
+        $ref: '#/definitions/enums.CategoryType'
+      description:
+        type: string
+      id:
+        type: string
+      imageUrl:
+        type: string
+      name:
+        type: string
+      status:
+        $ref: '#/definitions/enums.ProductStatus'
+      stock:
         type: integer
     type: object
-host: localhost:8185
+  services.GetProductRequestById:
+    properties:
+      id:
+        type: string
+    type: object
+  services.GetProductResponse:
+    properties:
+      categoryDescription:
+        type: string
+      categoryName:
+        type: string
+      categoryType:
+        $ref: '#/definitions/enums.CategoryType'
+      description:
+        type: string
+      id:
+        type: string
+      imageUrl:
+        type: string
+      name:
+        type: string
+      status:
+        $ref: '#/definitions/enums.ProductStatus'
+      stock:
+        type: integer
+    type: object
+  services.GetProductsRequest:
+    properties:
+      order:
+        type: string
+      page:
+        type: integer
+      pageLength:
+        type: integer
+      sortBy:
+        type: string
+    type: object
+  services.OrderItemModel:
+    properties:
+      productId:
+        type: string
+      quantity:
+        type: integer
+    required:
+    - productId
+    - quantity
+    type: object
+  services.OrderModel:
+    properties:
+      orderId:
+        type: string
+      orderitems:
+        items:
+          $ref: '#/definitions/services.GetOrderItemModel'
+        type: array
+      taxAmount:
+        type: number
+      totalPrice:
+        type: number
+    type: object
+  services.Result:
+    properties:
+      page:
+        type: integer
+      perPage:
+        type: integer
+      products:
+        items:
+          $ref: '#/definitions/services.GetProductResponse'
+        type: array
+      requestedPageLength:
+        type: integer
+      totalPage:
+        type: integer
+      totalResults:
+        type: integer
+    type: object
+  services.SignInRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  services.SignInResponse:
+    properties:
+      access_token:
+        type: string
+    type: object
+  services.UpdateProductRequest:
+    properties:
+      categoryId:
+        type: string
+      description:
+        maxLength: 100
+        minLength: 3
+        type: string
+      id:
+        type: string
+      imageUrl:
+        type: string
+      name:
+        maxLength: 100
+        minLength: 3
+        type: string
+      price:
+        type: number
+      status:
+        $ref: '#/definitions/enums.ProductStatus'
+      stock:
+        minimum: 0
+        type: integer
+    required:
+    - categoryId
+    - description
+    - imageUrl
+    - name
+    - price
+    - stock
+    type: object
+  services.UpdateProductResponse:
+    properties:
+      productId:
+        type: string
+    type: object
+  services.UpdateStatusRequest:
+    properties:
+      id:
+        type: string
+      status:
+        $ref: '#/definitions/enums.OrderStatus'
+    required:
+    - id
+    - status
+    type: object
+  services.UpdateStatusResponse:
+    properties:
+      orderId:
+        type: string
+    type: object
 info:
-  contact:
-    email: support@swagger.io
-    name: API Support
-    url: http://www.swagger.io/support
-  description: Contains all the endpoint for the ticketmaster app
-  license:
-    name: Apache 2.0
-    url: http://www.apache.org/licenses/LICENSE-2.0.html
-  termsOfService: http://swagger.io/terms/
-  title: TicketMaster Endpoints
-  version: "1.0"
+  contact: {}
 paths:
   /:
     get:
@@ -118,30 +387,25 @@ paths:
       summary: Show the status of server.
       tags:
       - root
-  /api/v1/cinemas/{id}/cinemahall:
+  /api/v1/auth/register:
     post:
       consumes:
       - application/json
-      description: Create a halls to existing cinema
+      description: Register new user
       parameters:
-      - description: Id
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: CinemaHallRequest
+      - description: CreateUserRequest
         in: body
-        name: CinemaHallRequest
+        name: CreateUserRequest
         required: true
         schema:
-          $ref: '#/definitions/services.CinemaHallRequest'
+          $ref: '#/definitions/services.CreateUserRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/services.CinemaHallResponse'
+            $ref: '#/definitions/services.CreateUserResponse'
         "400":
           description: Bad Request
           schema:
@@ -154,38 +418,28 @@ paths:
             items:
               type: string
             type: array
-      summary: Create a halls to existing cinema
+      summary: Register new user
       tags:
-      - cinemas
-  /api/v1/cinemas/{id}/cinemahall/{cinemahallId}/seat:
+      - user
+  /api/v1/auth/signin:
     post:
       consumes:
       - application/json
-      description: Create a existing seats to halls
+      description: SignIn user
       parameters:
-      - description: Id
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: CinemaHallId
-        in: path
-        name: cinemahallId
-        required: true
-        type: string
-      - description: CreateCinemaSeatRequest
+      - description: SignInRequest
         in: body
-        name: CreateCinemaSeatRequest
+        name: SignInRequest
         required: true
         schema:
-          $ref: '#/definitions/services.CreateCinemaSeatRequest'
+          $ref: '#/definitions/services.SignInRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/services.CreateCinemaSeatResponse'
+            $ref: '#/definitions/services.SignInResponse'
         "400":
           description: Bad Request
           schema:
@@ -193,28 +447,31 @@ paths:
         "404":
           description: Not Found
           schema:
-            type: string
-      summary: Create a existing seats to halls
+            items:
+              type: string
+            type: array
+      summary: SignIn user
       tags:
-      - cinemas
-  /api/v1/city/{id}:
+      - user
+  /api/v1/orders:
     get:
       consumes:
       - application/json
-      description: Get a particular city by ID
+      description: Get all user order
       parameters:
-      - description: Id
-        in: path
-        name: id
+      - description: GetOrderRequest
+        in: body
+        name: GetOrderRequest
         required: true
-        type: string
+        schema:
+          $ref: '#/definitions/services.GetOrderRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/services.CityModelResponse'
+            $ref: '#/definitions/services.GetOrderResponse'
         "400":
           description: Bad Request
           schema:
@@ -222,28 +479,126 @@ paths:
         "404":
           description: Not Found
           schema:
-            type: string
-      summary: Get city by ID
+            items:
+              type: string
+            type: array
+      summary: Get all user order
       tags:
-      - cities
-  /api/v1/movies/{id}:
+      - order
+    post:
+      consumes:
+      - application/json
+      description: Create a a new customer order
+      parameters:
+      - description: CreateOrderRequest
+        in: body
+        name: CreateOrderRequest
+        required: true
+        schema:
+          $ref: '#/definitions/services.CreateOrderRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/services.CreateOrderResponse'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            items:
+              type: string
+            type: array
+      summary: Create a order
+      tags:
+      - order
+  /api/v1/orders/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Update user order status
+      parameters:
+      - description: UpdateStatusRequest
+        in: body
+        name: UpdateStatusRequest
+        required: true
+        schema:
+          $ref: '#/definitions/services.UpdateStatusRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/services.UpdateStatusResponse'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            items:
+              type: string
+            type: array
+      summary: Update user order status
+      tags:
+      - order
+  /api/v1/orders/{id}/cancel:
+    put:
+      consumes:
+      - application/json
+      description: Cancel user order
+      parameters:
+      - description: CancelOrderRequest
+        in: body
+        name: CancelOrderRequest
+        required: true
+        schema:
+          $ref: '#/definitions/services.CancelOrderRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/services.CancelOrderResponse'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            items:
+              type: string
+            type: array
+      summary: Cancel user order
+      tags:
+      - order
+  /api/v1/products:
     get:
       consumes:
       - application/json
-      description: Get a particular movie by ID
+      description: Get a products
       parameters:
-      - description: Id
-        in: path
-        name: id
+      - description: GetProductsRequest
+        in: body
+        name: GetProductsRequest
         required: true
-        type: string
+        schema:
+          $ref: '#/definitions/services.GetProductsRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/services.MovieDataResponse'
+            $ref: '#/definitions/services.Result'
         "400":
           description: Bad Request
           schema:
@@ -251,10 +606,167 @@ paths:
         "404":
           description: Not Found
           schema:
-            type: string
-      summary: Get movie by ID
+            items:
+              type: string
+            type: array
+      summary: Get a products
       tags:
-      - movies
-schemes:
-- http
+      - product
+    post:
+      consumes:
+      - application/json
+      description: Create a new product
+      parameters:
+      - description: CreateProductRequest
+        in: body
+        name: CreateProductRequest
+        required: true
+        schema:
+          $ref: '#/definitions/services.CreateProductRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/services.CreateProductResponse'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            items:
+              type: string
+            type: array
+      summary: Create a new product
+      tags:
+      - product
+  /api/v1/products/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a product by id
+      parameters:
+      - description: DeleteProductRequest
+        in: body
+        name: DeleteProductRequest
+        required: true
+        schema:
+          $ref: '#/definitions/services.DeleteProductRequest'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+          schema:
+            $ref: '#/definitions/services.Result'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            items:
+              type: string
+            type: array
+      summary: Delete a product by id
+      tags:
+      - product
+    get:
+      consumes:
+      - application/json
+      description: Get a product by the ID
+      parameters:
+      - description: GetProductRequestById
+        in: body
+        name: GetProductRequestById
+        required: true
+        schema:
+          $ref: '#/definitions/services.GetProductRequestById'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/services.GetProductByIdResponse'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            items:
+              type: string
+            type: array
+      summary: Get a product by the ID
+      tags:
+      - product
+    put:
+      consumes:
+      - application/json
+      description: Update product with product info
+      parameters:
+      - description: UpdateProductRequest
+        in: body
+        name: UpdateProductRequest
+        required: true
+        schema:
+          $ref: '#/definitions/services.UpdateProductRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/services.UpdateProductResponse'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            items:
+              type: string
+            type: array
+      summary: Update product with product info
+      tags:
+      - product
+  /api/v1/user/add-role:
+    post:
+      consumes:
+      - application/json
+      description: Create a new role
+      parameters:
+      - description: CreateRoleRequest
+        in: body
+        name: CreateRoleRequest
+        required: true
+        schema:
+          $ref: '#/definitions/services.CreateRoleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/services.CreateRoleResponse'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            items:
+              type: string
+            type: array
+      summary: Create a new role
+      tags:
+      - userole
 swagger: "2.0"

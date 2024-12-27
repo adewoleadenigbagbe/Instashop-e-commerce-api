@@ -14,6 +14,18 @@ type CategoryController struct {
 	App *core.BaseApp
 }
 
+// Category godoc
+// @Summary     Create a category
+// @Description    Create a new category for product
+// @Tags         category
+// @Accept       json
+// @Produce      json
+// @Param        CreateCategoryRequest  body  services.CreateCategoryRequest  true  "CreateCategoryRequest"
+// @Success      200  {object}  services.CreateCategoryResponse
+// @Failure      400  {object}  string
+// @Failure      404  {object}  []string
+// @Router       /api/v1/categories [post]
+
 func (controller CategoryController) CreateCategoryHandler(orderContext echo.Context) error {
 	request := new(services.CreateCategoryRequest)
 	err := orderContext.Bind(request)
