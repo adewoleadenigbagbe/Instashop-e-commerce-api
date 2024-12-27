@@ -11,9 +11,17 @@ A RESTful API for an e-commerce application. This API will handle basic CRUD ope
 * MySQL
 * Gorm
 * JWT
+* Goose
 
 ## Usage
 Make sure you have the MySQL service running on the machine as specified as the dependencies for this project. Change the configuration as it suit you in the .env
+
+In the Shared/Database directory, run the Migration files to create database tables using this below command.Make sure you have goose binary installed and placed in the GOBIN path.Also there is a seed.sql data in the seed directory, run to populate against the table in the database
+
+```
+goose -dir shared/database/migrations -table _migrations mysql "root:P@ssw0r1d@tcp(localhost:3306)/ECommerceDb?charset=utf8mb4&parseTime=True&loc=Local" up
+```
+
 
 To run locally, cd from the root to the directory and run 
 
