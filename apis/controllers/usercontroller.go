@@ -5,6 +5,7 @@ import (
 	"reflect"
 
 	"github.com/adewoleadenigbagbe/instashop-e-commerce/apis/core"
+	"github.com/adewoleadenigbagbe/instashop-e-commerce/apis/utils"
 	services "github.com/adewoleadenigbagbe/instashop-e-commerce/infastructure/services/user"
 	"github.com/labstack/echo/v4"
 )
@@ -30,6 +31,12 @@ func (userController UserController) AddRoleHandler(userContext echo.Context) er
 	err = userContext.Bind(request)
 	if err != nil {
 		return userContext.JSON(http.StatusBadRequest, err.Error())
+	}
+
+	// Validate request
+	if err := userContext.Validate(request); err != nil {
+		errors := utils.GetValidationErrors(err)
+		return userContext.JSON(http.StatusBadRequest, errors)
 	}
 
 	dataResp, errResp := userController.App.UserService.AddRole(*request)

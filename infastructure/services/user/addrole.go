@@ -16,23 +16,25 @@ type UserService struct {
 }
 
 type CreateRoleRequest struct {
-	Name        string `json:"name"`
-	Role        int    `json:"role"`
-	Description string `json:"description"`
+	Role        enums.Role `json:"role" validate:"required,gt=0"`
+	Description string     `json:"description" validate:"required"`
 }
 
 type CreateRoleResponse struct {
-	UserRoleId uuid.UUID `json:"userRoleId"`
+	RoleId uuid.UUID `json:"id"`
 }
 
 func (userService UserService) AddRole(request CreateRoleRequest) (CreateRoleResponse, models.ErrorResponse) {
-
 	roleId, _ := uuid.NewV7()
+	rolename, err := request.Role.GetRoleName()
+	if err != nil {
+		return CreateRoleResponse{}, models.ErrorResponse{StatusCode: http.StatusBadRequest, Error: err}
+	}
 	userRole := entities.UserRole{
 		ID:          roleId,
-		Name:        request.Name,
+		Name:        rolename,
 		Description: request.Description,
-		Role:        enums.Role(request.Role),
+		Role:        request.Role,
 	}
 
 	rowsAffected := userService.DB.Where(entities.UserRole{Role: enums.Role(request.Role)}).FirstOrCreate(&userRole).RowsAffected
@@ -41,22 +43,5 @@ func (userService UserService) AddRole(request CreateRoleRequest) (CreateRoleRes
 		return CreateRoleResponse{}, models.ErrorResponse{StatusCode: http.StatusBadRequest, Error: err}
 	}
 
-	return CreateRoleResponse{UserRoleId: userRole.ID}, models.ErrorResponse{}
+	return CreateRoleResponse{RoleId: userRole.ID}, models.ErrorResponse{}
 }
-
-// func validateRole(request CreateRoleRequest) []error {
-// 	vErrors := []error{}
-// 	if request.Name == "" {
-// 		vErrors = append(vErrors, fmt.Errorf(ErrRequiredField, "name"))
-// 	}
-
-// 	if request.Description == "" {
-// 		vErrors = append(vErrors, fmt.Errorf(ErrRequiredField, "description"))
-// 	}
-
-// 	if request.Role <= 0 {
-// 		vErrors = append(vErrors, fmt.Errorf(ErrRequiredField, "role"))
-// 	}
-
-// 	return vErrors
-// }

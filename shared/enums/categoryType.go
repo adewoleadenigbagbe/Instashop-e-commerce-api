@@ -45,15 +45,3 @@ func (c CategoryType) GetCategoryName() (string, error) {
 
 }
 
-func getDiscount(customerType string) float64 {
-	switch customerType {
-	case "VIP":
-		return 0.20
-	case "Regular":
-		return 0.10
-	case "New":
-		return 0.15
-	default:
-		return 0.0
-	}
-}

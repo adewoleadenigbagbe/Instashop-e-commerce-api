@@ -5,6 +5,7 @@ import (
 	"reflect"
 
 	"github.com/adewoleadenigbagbe/instashop-e-commerce/apis/core"
+	"github.com/adewoleadenigbagbe/instashop-e-commerce/apis/utils"
 	services "github.com/adewoleadenigbagbe/instashop-e-commerce/infastructure/services/auth"
 
 	"github.com/labstack/echo/v4"
@@ -33,12 +34,18 @@ func (authController AuthController) RegisterHandler(authContext echo.Context) e
 		return authContext.JSON(http.StatusBadRequest, err.Error())
 	}
 
+	// Validate request
+	if err := authContext.Validate(request); err != nil {
+		errors := utils.GetValidationErrors(err)
+		return authContext.JSON(http.StatusBadRequest, errors)
+	}
+
 	response, errResp := authController.App.AuthService.RegisterUser(*request)
 	if !reflect.ValueOf(errResp).IsZero() {
 		return authContext.JSON(errResp.StatusCode, errResp.Error.Error())
 	}
 
-	return authContext.JSON(http.StatusOK, response)
+	return authContext.JSON(http.StatusCreated, response)
 }
 
 // Auth godoc
@@ -58,6 +65,12 @@ func (authController AuthController) SignInHandler(authContext echo.Context) err
 	err = authContext.Bind(request)
 	if err != nil {
 		return authContext.JSON(http.StatusBadRequest, err.Error())
+	}
+
+	// Validate request
+	if err := authContext.Validate(request); err != nil {
+		errors := utils.GetValidationErrors(err)
+		return authContext.JSON(http.StatusBadRequest, errors)
 	}
 
 	resp, errResp := authController.App.AuthService.SignIn(*request)

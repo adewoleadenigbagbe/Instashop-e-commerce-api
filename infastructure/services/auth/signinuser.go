@@ -17,8 +17,8 @@ type AuthService struct {
 }
 
 type SignInRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Email    string `json:"email" validate:"required,email"`
+	Password string `json:"password" validate:"required"`
 }
 
 type SignInResponse struct {
@@ -28,7 +28,7 @@ type SignInResponse struct {
 func (authService AuthService) SignIn(request SignInRequest) (SignInResponse, models.ErrorResponse) {
 	var err error
 
-	var user *entities.User
+	var user entities.User
 	err = authService.DB.Where("Email = ?", request.Email).
 		Where("IsDeprecated = ?", false).
 		Preload("UserRole").
@@ -43,24 +43,10 @@ func (authService AuthService) SignIn(request SignInRequest) (SignInResponse, mo
 		return SignInResponse{}, models.ErrorResponse{StatusCode: http.StatusBadRequest, Error: fmt.Errorf("email or password not found")}
 	}
 
-	token, err := jwtauth.GenerateJWT(*user)
+	token, err := jwtauth.GenerateJWT(user)
 	if err != nil {
 		return SignInResponse{}, models.ErrorResponse{StatusCode: http.StatusBadRequest, Error: err}
 	}
 
 	return SignInResponse{Token: token}, models.ErrorResponse{}
 }
-
-// func validateSignInCredentials(request SignInRequest) []error {
-// 	var validationErrors []error
-// 	if request.Password == "" {
-// 		validationErrors = append(validationErrors, fmt.Errorf(ErrRequiredField, "password"))
-// 	}
-
-// 	isEmailValid, _ := regexp.MatchString(EmailRegex, request.Email)
-// 	if !isEmailValid {
-// 		validationErrors = append(validationErrors, fmt.Errorf(ErrInValidField, "email"))
-// 	}
-
-// 	return validationErrors
-// }

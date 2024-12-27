@@ -105,7 +105,6 @@ func (service OrderService) GetOrders(request GetOrderRequest) (GetOrderResponse
 		return GetOrderResponse{}, models.ErrorResponse{StatusCode: http.StatusInternalServerError, Error: result.Error}
 	}
 
-	// First, group by OrderId
 	ordersByOrderId := lo.GroupBy(ordersDTO, func(order OrderDTO) uuid.UUID {
 		return order.Id
 	})

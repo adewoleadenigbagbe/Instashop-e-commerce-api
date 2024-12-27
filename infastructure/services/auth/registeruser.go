@@ -15,16 +15,16 @@ const (
 )
 
 type CreateUserRequest struct {
-	FirstName   string `json:"firstName"`
-	LastName    string `json:"lastName"`
-	Email       string `json:"email"`
-	Password    string `json:"password"`
-	PhoneNumber string `json:"phoneNumber"`
-	RoleId      string `json:"roleId"`
+	FirstName   string `json:"firstName" validate:"required"`
+	LastName    string `json:"lastName" validate:"required"`
+	Email       string `json:"email" validate:"required,email"`
+	Password    string `json:"password" validate:"required"`
+	PhoneNumber string `json:"phoneNumber" validate:"required,regex=\\+[1-9]{1}[0-9]{0,2}-[2-9]{1}[0-9]{2}-[2-9]{1}[0-9]{2}-[0-9]{4}$"`
+	RoleId      string `json:"roleId" validate:"required,uuid"`
 }
 
 type CreateUserResponse struct {
-	UserId uuid.UUID `json:"userId"`
+	UserId uuid.UUID `json:"id"`
 }
 
 func (authService AuthService) RegisterUser(request CreateUserRequest) (CreateUserResponse, models.ErrorResponse) {
@@ -56,43 +56,3 @@ func (authService AuthService) RegisterUser(request CreateUserRequest) (CreateUs
 
 	return CreateUserResponse{UserId: user.ID}, models.ErrorResponse{}
 }
-
-// func validateUser(request CreateUserRequest) []error {
-// 	var validationErrors []error
-// 	if request.FirstName == "" {
-// 		validationErrors = append(validationErrors, fmt.Errorf(ErrRequiredField, "firstName"))
-// 	}
-
-// 	if request.LastName == "" {
-// 		validationErrors = append(validationErrors, fmt.Errorf(ErrRequiredField, "lastName"))
-// 	}
-
-// 	if request.Password == "" {
-// 		validationErrors = append(validationErrors, fmt.Errorf(ErrRequiredField, "password"))
-// 	}
-
-// 	if request.Address == "" {
-// 		validationErrors = append(validationErrors, fmt.Errorf(ErrRequiredField, "address"))
-// 	}
-
-// 	if len(request.CityId) == 0 || len(request.CityId) < 36 {
-// 		validationErrors = append(validationErrors, fmt.Errorf(ErrRequiredUUIDField, "cityId"))
-// 	}
-
-// 	if request.CityId == utilities.DEFAULT_UUID {
-// 		validationErrors = append(validationErrors, fmt.Errorf(ErrInvalidUUID, "cityId"))
-// 	}
-
-// 	isEmailValid, _ := regexp.MatchString(EmailRegex, request.Email)
-// 	if !isEmailValid {
-// 		validationErrors = append(validationErrors, fmt.Errorf(ErrInValidField, "email"))
-// 	}
-
-// 	isPhoneValid, _ := regexp.MatchString(PhoneNumberRegex, request.PhoneNumber)
-
-// 	if !isPhoneValid {
-// 		validationErrors = append(validationErrors, fmt.Errorf(ErrInValidField, "phone number"))
-// 	}
-
-// 	return validationErrors
-// }
