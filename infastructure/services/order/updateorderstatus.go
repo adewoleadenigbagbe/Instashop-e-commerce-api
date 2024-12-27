@@ -11,7 +11,7 @@ import (
 )
 
 type UpdateStatusRequest struct {
-	Id     uuid.UUID         `json:"orderId" validate:"required,uuid"`
+	Id     uuid.UUID         `param:"id" validate:"required,uuid"`
 	Status enums.OrderStatus `json:"status" validate:"required"`
 }
 

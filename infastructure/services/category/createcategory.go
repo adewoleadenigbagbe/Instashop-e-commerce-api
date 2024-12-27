@@ -16,18 +16,18 @@ type CategoryService struct {
 
 type CreateCategoryRequest struct {
 	Description string             `json:"description" validate:"required"`
-	Type        enums.CategoryType `json:"type"`
+	Type        enums.CategoryType `json:"type" validate:"required,gt=0"`
 }
 
 type CreateCategoryResponse struct {
 	Id uuid.UUID `json:"id"`
 }
 
-func (service CategoryService) CreateProduct(request CreateCategoryRequest) (CreateCategoryResponse, models.ErrorResponse) {
+func (service CategoryService) CreateCategory(request CreateCategoryRequest) (CreateCategoryResponse, models.ErrorResponse) {
 	var err error
 	categoryId, _ := uuid.NewV7()
 	categoryName, err := request.Type.GetCategoryName()
-	if err != nil{
+	if err != nil {
 		return CreateCategoryResponse{}, models.ErrorResponse{StatusCode: http.StatusInternalServerError, Error: err}
 	}
 	category := entities.Category{

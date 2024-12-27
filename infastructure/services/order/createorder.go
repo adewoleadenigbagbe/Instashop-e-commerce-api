@@ -17,8 +17,8 @@ type OrderService struct {
 }
 
 type CreateOrderRequest struct {
-	UserId     uuid.UUID        `json:"userId" validate:"required,uuid"`
-	OrderItems []OrderItemModel `json:"orderitems" validate:"required,dive,min=1"`
+	UserId uuid.UUID `json:"userId" validate:"required,uuid"`
+	OrderItems []OrderItemModel `json:"orderItems" validate:"required,dive"`
 }
 
 type OrderItemModel struct {
@@ -34,23 +34,18 @@ func (service OrderService) CreateOrder(request CreateOrderRequest) (CreateOrder
 	var err error
 
 	orderId, _ := uuid.NewV7()
-
 	productIds := lo.Map(request.OrderItems, func(item OrderItemModel, index int) uuid.UUID {
 		return item.ProductId
 	})
 
-	var ProductInfos []struct {
-		Id    uuid.UUID
-		Price float64
-	}
+	var Products []*entities.Product
 
 	//check the stock for each product
 	result := service.DB.Table("products").
 		Where("Id IN ?", productIds).
 		Where("IsDeprecated = ?", false).
 		Where("Status = ?", enums.Active).
-		Select("Id, Price").
-		Find(&ProductInfos)
+		Find(&Products)
 
 	if result.Error != nil {
 		return CreateOrderResponse{}, models.ErrorResponse{StatusCode: http.StatusInternalServerError, Error: result.Error}
@@ -61,21 +56,22 @@ func (service OrderService) CreateOrder(request CreateOrderRequest) (CreateOrder
 	})
 
 	var totalAmount float64 = 0
-	orderItems := make([]*entities.OrderItem, len(ProductInfos))
-	for _, p := range ProductInfos {
+	orderItems := make([]*entities.OrderItem, len(Products))
+	for i, p := range Products {
 		orderItemId, _ := uuid.NewV7()
 		orderItem := &entities.OrderItem{
 			ID:        orderItemId,
 			OrderID:   orderId,
-			ProductID: p.Id,
-			Quantity:  productMap[p.Id].Quantity,
+			ProductID: p.ID,
+			Quantity:  productMap[p.ID].Quantity,
 			UnitPrice: p.Price,
 		}
 
 		orderItem.CalculateTotal()
 		totalAmount += orderItem.TotalPrice
+		p.Stock -= orderItem.Quantity
 
-		orderItems = append(orderItems, orderItem)
+		orderItems[i] = orderItem
 	}
 
 	order := &entities.Order{
@@ -87,15 +83,23 @@ func (service OrderService) CreateOrder(request CreateOrderRequest) (CreateOrder
 	}
 
 	err = service.DB.Transaction(func(tx *gorm.DB) error {
+		//create order
+		if err := tx.Create(order).Error; err != nil {
+			return err
+
+		}
+		// Create new orderItems
 		if err := tx.Create(orderItems).Error; err != nil {
-			// return any error will rollback
 			return err
 		}
 
-		if err := tx.Create(order).Error; err != nil {
-			// return any error will rollback
-			return err
+		//update the product info
+		for _, product := range Products {
+			if err := tx.Save(product).Error; err != nil {
+				return err
+			}
 		}
+
 		// return nil will commit the whole transaction
 		return nil
 	})

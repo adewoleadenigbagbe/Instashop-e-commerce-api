@@ -10,4 +10,6 @@ func RegisterAllRoutes(app *core.BaseApp) {
 	authRoutes(app, group)
 	productRoutes(app, group)
 	userRoutes(app, group)
+	orderRoutes(app, group)
+	categoryRoutes(app, group)
 }
