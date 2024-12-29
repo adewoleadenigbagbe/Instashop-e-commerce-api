@@ -13,6 +13,7 @@ import (
 	middlewares "github.com/adewoleadenigbagbe/instashop-e-commerce/apis/middleware"
 	"github.com/adewoleadenigbagbe/instashop-e-commerce/apis/routes"
 	"github.com/adewoleadenigbagbe/instashop-e-commerce/shared/configs"
+	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/gommon/log"
 	echoSwagger "github.com/swaggo/echo-swagger"
@@ -38,6 +39,17 @@ import (
 //   - application/json
 // @schemes http
 func InitializeAPI() {
+	//load env variables
+	environment := os.Getenv("APP_ENV")
+	if environment == "" {
+		environment = "Development"
+	}
+
+	err := godotenv.Load(fmt.Sprintf(".env.%s", environment))
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
 	//configure application
 	app, err := core.ConfigureApp()
 	if err != nil {

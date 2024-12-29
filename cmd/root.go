@@ -4,6 +4,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var (
+	environment string
+)
+
 type ApiHost struct {
 	rootCmd *cobra.Command
 }
@@ -24,7 +28,9 @@ func NewAPIHost() *ApiHost {
 }
 
 func (host *ApiHost) Start() error {
-	host.rootCmd.AddCommand(serveApiCommand())
+	s := serveApiCommand()
+	host.rootCmd.AddCommand(s)
+	s.Flags().StringVarP(&environment, "APP_ENV", "a", "", "Set the environment (e.g.development,staging, production)")
 
 	return host.execute()
 }

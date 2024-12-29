@@ -18,15 +18,20 @@ Make sure you have the MySQL service running on the machine as specified as the 
 
 In the Shared/Database directory, run the Migration files to create database tables using this below command.Make sure you have goose binary installed and placed in the GOBIN path.Also there is a seed.sql data in the seed directory, run to populate against the table in the database
 
+Goose Installation
+```
+go install github.com/pressly/goose/v3/cmd/goose@latest
+```
+
+Migration
 ```
 goose -dir shared/database/migrations -table _migrations mysql "root:P@ssw0r1d@tcp(localhost:3306)/ECommerceDb?charset=utf8mb4&parseTime=True&loc=Local" up
 ```
 
-
 To run locally, cd from the root to the directory and run 
 
 ```
-go run main.go serveapi
+go run main.go serveapi --APP_ENV Development
 ```
 
 To Access the endpoint use this URL
