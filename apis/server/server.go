@@ -19,9 +19,9 @@ import (
 	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
-// @title TicketMaster Endpoints
+// @title Instashop Endpoints
 // @version 1.0
-// @description Contains all the endpoint for the ticketmaster app
+// @description Contains all the endpoint for the Instashop app
 // @termsOfService http://swagger.io/terms/
 
 // @contact.name API Support
