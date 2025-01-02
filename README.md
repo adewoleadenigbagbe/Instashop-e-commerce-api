@@ -34,6 +34,11 @@ To run locally, cd from the root to the directory and run
 go run main.go serveapi --APP_ENV Development
 ```
 
+To run on Docker
+```
+docker-compose -f docker-compose.dev.yml up -d
+```
+
 To Access the endpoint use this URL
 ```
 http://localhost:8189/swagger/index.html
