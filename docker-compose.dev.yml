@@ -1,0 +1,40 @@
+version: "3.8"
+services:
+  api:
+    container_name: ecommerce-api   
+    build: .
+    command: ["./instashop", "serveapi","--APP_ENV", "Development"]
+    env_file: 
+      - .env.Development
+    ports:
+      - "8189:${PORT}"
+    depends_on:
+      - mysql
+    restart: on-failure
+    networks:
+      - networkstack
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    env_file:
+      - .env.Development
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:${DB_PORT}"
+    restart: always
+    networks:
+      - networkstack
+
+# Networks to be created to facilitate communication between containers
+networks:
+  networkstack:
+    driver: bridge
+
+volumes:
+  mysql_data:

@@ -15,7 +15,7 @@ type ApiHost struct {
 func NewAPIHost() *ApiHost {
 	tc := &ApiHost{
 		rootCmd: &cobra.Command{
-			Use:   "serveapi",
+			Use:   "instashop",
 			Short: "ApiHost CLI",
 			// no need to provide the default cobra completion command
 			CompletionOptions: cobra.CompletionOptions{
